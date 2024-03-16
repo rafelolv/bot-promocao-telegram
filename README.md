@@ -53,3 +53,4 @@ Certifique-se de manter o script em execução para continuar recebendo as promo
 
 - Adicionar funcionalidade para reconhecer e processar promoções de outros sites além do Promobit e do Pelando.
 - Melhorar o processo de identificação de mudanças nas páginas para evitar redundâncias.
+- Armazenar os arquivos de token e id em uma variável fora do código (Esse é fácil, só sou preguiçoso mesmo kkkkkk)
