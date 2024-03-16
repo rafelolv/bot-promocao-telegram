@@ -53,4 +53,3 @@ Certifique-se de manter o script em execução para continuar recebendo as promo
 
 - Adicionar funcionalidade para reconhecer e processar promoções de outros sites além do Promobit e do Pelando.
 - Melhorar o processo de identificação de mudanças nas páginas para evitar redundâncias.
-
