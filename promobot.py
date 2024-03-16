@@ -22,6 +22,8 @@ urls = [
     'https://www.promobit.com.br/promocoes/loja/aliexpress/',
     'https://www.promobit.com.br/promocoes/loja/terabyteshop/',
     'https://www.promobit.com.br/promocoes/informatica/',
+    'https://www.promobit.com.br/promocoes/loja/steam/',
+    'https://www.promobit.com.br/promocoes/loja/nuuvem/',
     'https://www.promobit.com.br/promocoes/loja/mercado-livre/'
 ]
 
