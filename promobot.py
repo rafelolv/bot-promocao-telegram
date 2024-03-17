@@ -8,18 +8,17 @@ import os
 from datetime import datetime
 
 # Configurações do bot do Telegram
-bot_token = 'TOKEN DO SEU BOT'
-chat_id = 'SEU CHAT ID'
+bot_token = 'INSIRA O TOKEN DO SEU BOT (Criar o Bot pelo BotFather)'
+chat_id = 'INSIRA O CHAT ID (Basta adicionar o bot RawDataBot ao seu chat/grupo e ele te retornara o ID do chat)'
 
 bot = telegram.Bot(token=bot_token)
 
 # Lista de URLs das páginas com promoções
 urls = [
-    'https://www.promobit.com.br/promocoes/recentes/',
     'https://www.promobit.com.br/promocoes/loja/amazon/',
     'https://www.promobit.com.br/promocoes/loja/magazine-luiza/',
     'https://www.promobit.com.br/promocoes/loja/casas-bahia/',
-    'https://www.promobit.com.br/promocoes/loja/ponto-frio/',
+    'https://www.promobit.com.br/promocoes/loja/steam/',
     'https://www.promobit.com.br/promocoes/loja/samsung/',
     'https://www.promobit.com.br/promocoes/loja/mercado-livre/',
     'https://www.promobit.com.br/promocoes/loja/aliexpress/',
@@ -31,7 +30,7 @@ urls = [
     'https://www.promobit.com.br/promocoes/loja/fastshop/',
     'https://www.promobit.com.br/promocoes/loja/americanas/',
     'https://www.promobit.com.br/promocoes/informatica/',
-    'https://www.promobit.com.br/promocoes/loja/steam/'
+    'https://www.promobit.com.br/promocoes/loja/ponto-frio/'
 ]
 
 
