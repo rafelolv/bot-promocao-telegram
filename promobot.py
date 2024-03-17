@@ -4,10 +4,12 @@ import telegram
 import asyncio
 import re
 from emojis import keyword_to_emoji, default_emoji
+import os
+from datetime import datetime
 
 # Configurações do bot do Telegram
-bot_token = 'TOKEN DO BOT'
-chat_id = 'ID DO CHAT'
+bot_token = 'BOT TOKEN'
+chat_id = 'CHAT ID'
 
 bot = telegram.Bot(token=bot_token)
 
@@ -15,32 +17,43 @@ bot = telegram.Bot(token=bot_token)
 urls = [
     'https://www.promobit.com.br/promocoes/recentes/',
     'https://www.promobit.com.br/promocoes/loja/amazon/',
-    'https://www.promobit.com.br/promocoes/loja/pichau/',
-    'https://www.promobit.com.br/promocoes/loja/wine/',
-    'https://www.promobit.com.br/promocoes/loja/kabum/',
     'https://www.promobit.com.br/promocoes/loja/magazine-luiza/',
+    'https://www.promobit.com.br/promocoes/loja/casas-bahia/',
+    'https://www.promobit.com.br/promocoes/loja/ponto-frio/',
+    'https://www.promobit.com.br/promocoes/loja/samsung/',
+    'https://www.promobit.com.br/promocoes/loja/mercado-livre/',
     'https://www.promobit.com.br/promocoes/loja/aliexpress/',
-    'https://www.promobit.com.br/promocoes/loja/terabyteshop/',
-    'https://www.promobit.com.br/promocoes/informatica/',
-    'https://www.promobit.com.br/promocoes/loja/steam/',
     'https://www.promobit.com.br/promocoes/loja/nuuvem/',
-    'https://www.promobit.com.br/promocoes/loja/mercado-livre/'
+    'https://www.promobit.com.br/promocoes/loja/kabum/',
+    'https://www.promobit.com.br/promocoes/loja/wine/',
+    'https://www.promobit.com.br/promocoes/loja/pichau/',
+    'https://www.promobit.com.br/promocoes/loja/terabyteshop/',
+    'https://www.promobit.com.br/promocoes/loja/fastshop/',
+    'https://www.promobit.com.br/promocoes/loja/americanas/',
+    'https://www.promobit.com.br/promocoes/informatica/',
+    'https://www.promobit.com.br/promocoes/loja/steam/'
 ]
 
-# Conjunto para armazenar URLs de promoções já enviadas
-promo_set = set()
+
+# Arquivo para armazenar as URLs das promoções enviadas
+sent_promos_file = 'sent_promos.txt'
 
 async def extract_deals():
     try:
         while True:
             for url in urls:
-                # Refresh da página a cada iteração
+                # Limpa o cache atual
+                await asyncio.sleep(2)
+
+                # Refresh da página
+                print(f"{datetime.now()} - Atualizando página: {url}")
                 soup = refresh_page(url)
 
                 # Verifica se houve mudanças no conteúdo da página
                 if has_changes(soup, url):
+                    print(f"{datetime.now()} - Detectadas mudanças na página: {url}")
                     # Extrai as promoções da página
-                    deal_elements = soup.find_all(class_=re.compile('^font-sans text-neutral-low-100 whitespace-pre-wrap text-base'))[:5]
+                    deal_elements = soup.find_all(class_=re.compile('^font-sans text-neutral-low-100 whitespace-pre-wrap text-base'))[:10]
 
                     for deal in deal_elements:
                         title = deal.text.strip()
@@ -52,9 +65,9 @@ async def extract_deals():
                         product_url = f'https://www.promobit.com.br{url_element["href"]}' if url_element else 'URL não encontrada'
 
                         # Verifica se o URL do produto já foi enviado anteriormente
-                        if product_url not in promo_set:
-                            # Adiciona o URL ao conjunto de promoções enviadas
-                            promo_set.add(product_url)
+                        if not is_url_sent(product_url):
+                            # Adiciona a URL ao arquivo de URLs enviadas
+                            mark_url_as_sent(product_url)
 
                             # Encontra a URL da imagem
                             image_url = None
@@ -76,13 +89,22 @@ async def extract_deals():
                             if not emoji_added:
                                 title = f'{default_emoji} {title}'
 
-                            await send_message(title, price, previous_price, product_url, image_url)
+                            # Verifica se há cupom disponível
+                            coupon = None
+                            coupon_match = re.search(r'"offerCoupon":"([^"]+)"', product_page_response.text)
+                            if coupon_match:
+                                coupon = coupon_match.group(1)
+
+                            await send_message(title, price, previous_price, product_url, image_url, coupon)
                             
                             # Aguarda 2 segundos entre cada mensagem enviada
                             await asyncio.sleep(2)
 
-            # Aguarda 2 segundos antes de verificar novamente
-            await asyncio.sleep(2)
+            # Aguarda 1 segundo antes de verificar novamente
+            await asyncio.sleep(1)
+
+            # Aguarda 5 segundos antes de executar novamente
+            await asyncio.sleep(5)
 
     except requests.Timeout:
         print("O servidor não respondeu a tempo. Tentando novamente em alguns segundos...")
@@ -102,14 +124,37 @@ def has_changes(new_soup, url):
     Verifica se houve mudanças no conteúdo da página comparando com a última vez que foi verificada.
     Retorna True se houver mudanças, False caso contrário.
     """
-    # Aqui você pode implementar a lógica para verificar se há mudanças no conteúdo da página
-    # Comparando com a última vez que foi verificada. Isso pode incluir comparação de elementos HTML
-    # Ou outras técnicas dependendo da estrutura da página.
+    # Carrega o conteúdo da última verificação, se disponível
+    last_content = load_last_content(url)
+    
+    # Se não houver conteúdo anterior, assume que houve mudança
+    if not last_content:
+        return True
 
-    # Por enquanto, vamos apenas retornar True sempre, para forçar a extração de promoções em todas as iterações.
-    return True
+    # Verifica se o conteúdo atual é diferente do conteúdo anterior
+    return str(new_soup) != str(last_content)
 
-async def send_message_with_photo(title, price, previous_price, url, image_url):
+
+def load_last_content(url):
+    """
+    Carrega o conteúdo da última verificação da URL especificada.
+    Retorna None se não houver conteúdo anterior.
+    """
+    file_path = f"{url.replace('/', '_').replace(':', '_')}.html"
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as file:
+            return BeautifulSoup(file.read(), "html.parser")
+    return None
+
+def save_current_content(new_soup, url):
+    """
+    Salva o conteúdo atual da página para uso futuro.
+    """
+    file_path = f"{url.replace('/', '_').replace(':', '_')}.html"
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.write(str(new_soup))
+
+async def send_message_with_photo(message, image_url):
     try:
         # Baixa a imagem
         image_response = requests.get(image_url)
@@ -121,13 +166,13 @@ async def send_message_with_photo(title, price, previous_price, url, image_url):
             # Abre a imagem salva localmente
             with open('temp_image.jpg', 'rb') as image_file:
                 # Envia a imagem como anexo junto com a mensagem
-                await bot.send_photo(chat_id=chat_id, photo=image_file, caption=f'<b>{title}</b>\n\n💵 De: {previous_price} por {price}\n\n🛒 Ver Produto: {url}', parse_mode='HTML')
+                await bot.send_photo(chat_id=chat_id, photo=image_file, caption=message, parse_mode='HTML')
         else:
             print("Erro ao baixar a imagem. Status code:", image_response.status_code)
     except Exception as e:
         print("Erro ao enviar a mensagem com a imagem:", e)
 
-async def send_message(title, price, previous_price, url, image_url):
+async def send_message(title, price, previous_price, url, image_url, coupon=None):
     # Verifica se a URL do produto é válida
     if 'promobit.com.br/oferta/' in url:
         try:
@@ -137,17 +182,38 @@ async def send_message(title, price, previous_price, url, image_url):
             # Cria o novo URL com o formato desejado
             redirect_url = f'https://www.promobit.com.br/Redirect/to/{product_id}/'
 
+            # Monta a mensagem com base nos dados
+            message = f'<b>{title}</b>\n\n'
+            if coupon:
+                message += f'🎟️ <b>CUPOM:</b> {coupon}\n'
+            message += f'💵 De: {previous_price} por {price}\n\n🛒 Ver Produto: {redirect_url}'
+
             # Verifica se a imagem está disponível
             if image_url:
-                await send_message_with_photo(title, price, previous_price, redirect_url, image_url)
+                # Envia a mensagem com a foto
+                await send_message_with_photo(message, image_url)
             else:
-                # Se não houver imagem, envia apenas a mensagem
-                message = f'<b>{title}</b>\n\n💵 De: {previous_price} por {price}\n\n🛒 Ver Produto: {redirect_url}'
+                # Envia a mensagem sem foto
                 await bot.send_message(chat_id=chat_id, text=message, parse_mode='HTML')
         except Exception as e:
             print("Erro ao processar o URL do produto:", e)
     else:
         print("URL do produto inválido:", url)
 
-# Inicia o loop de eventos do asyncio e executa a função extract_deals() em segundo plano
-asyncio.run(extract_deals())
+def is_url_sent(url):
+    with open('sent_promos.txt', 'r') as file:
+        for line in file:
+            if url.strip() == line.strip():
+                return True
+    return False
+
+
+def mark_url_as_sent(url):
+    with open('sent_promos.txt', 'a') as file:
+        file.write(url + '\n')
+
+async def main():
+    await extract_deals()
+
+if __name__ == "__main__":
+    asyncio.run(main())
