@@ -44,15 +44,3 @@ As promoções são extraídas da página utilizando técnicas de web scraping c
 3. O bot começará a enviar as promoções para o chat configurado.
 
 Certifique-se de manter o script em execução para continuar recebendo as promoções atualizadas.
-
-
-
-
-
-## Funções Futuras
-
-- Adicionar funcionalidade para reconhecer e processar promoções de outros sites além do Promobit e do Pelando.
-- Armazenar os dados de token e id em uma variável fora do código (Esse é fácil, só sou preguiçoso mesmo kkkkkk)
-- <s>Adicionar cupom na mensagem enviada ao Telegram</s> 
-- Corrigir delay para as promoções, as vezes ele retorna em poucos segundos e as vezes tem um atraso de 1-2 minutos. (Parcialmente feito)
-- <s>Algumas promoções pedem o uso de CUPONS ou usar o aplicativo no celular para ter o desconto, preciso de fazer uma verificação na página por palavras chaves como essas e se existirem naquela promo, colocar a descrição para o usuário saber sobre o app ou cupom.</s>
