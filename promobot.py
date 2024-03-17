@@ -8,8 +8,8 @@ import os
 from datetime import datetime
 
 # Configurações do bot do Telegram
-bot_token = 'BOT TOKEN'
-chat_id = 'CHAT ID'
+bot_token = 'TOKEN DO SEU BOT'
+chat_id = 'SEU CHAT ID'
 
 bot = telegram.Bot(token=bot_token)
 
