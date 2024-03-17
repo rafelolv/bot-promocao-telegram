@@ -8,18 +8,21 @@ Para utilizar este bot, é necessário configurar um bot no Telegram e obter o t
 
 ## Requisitos
 
-- Python 3.7 ou superior
+- **Python 3.7 ou superior**
 - Bibliotecas Python:
   - requests
   - BeautifulSoup
   - telegram
   - asyncio
   - emojis
+  - datetime
+  - os
+  - re
 
-Você pode instalar as dependências utilizando o pip:
+Você pode instalar as dependências utilizando o comando pip:
 
-pip install requests beautifulsoup4 python-telegram-bot asyncio emojis
-
+**pip install requests beautifulsoup4 python-telegram-bot asyncio emojis datetime os re
+**
 
 ## Funcionamento
 
