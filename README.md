@@ -21,8 +21,7 @@ Para utilizar este bot, é necessário configurar um bot no Telegram e obter o t
 
 Você pode instalar as dependências utilizando o comando pip:
 
-**pip install requests beautifulsoup4 python-telegram-bot asyncio emojis datetime os re
-**
+**pip install requests beautifulsoup4 python-telegram-bot asyncio emojis datetime os re**
 
 ## Funcionamento
 
