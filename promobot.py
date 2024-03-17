@@ -7,7 +7,7 @@ from emojis import keyword_to_emoji, default_emoji
 import os
 from datetime import datetime
 
-# Configurações do bot do Telegram
+# Configurações do bot e chat do Telegram
 bot_token = 'INSIRA O TOKEN DO SEU BOT (Criar o Bot pelo BotFather)'
 chat_id = 'INSIRA O CHAT ID (Basta adicionar o bot RawDataBot ao seu chat/grupo e ele te retornara o ID do chat)'
 
@@ -30,7 +30,15 @@ urls = [
     'https://www.promobit.com.br/promocoes/loja/fastshop/',
     'https://www.promobit.com.br/promocoes/loja/americanas/',
     'https://www.promobit.com.br/promocoes/informatica/',
-    'https://www.promobit.com.br/promocoes/loja/ponto-frio/'
+    'https://www.promobit.com.br/promocoes/eletronicos-audio-e-video/',
+    'https://www.promobit.com.br/promocoes/smartphones-tablets-e-telefones/',
+    'https://www.promobit.com.br/promocoes/games/',
+    'https://www.promobit.com.br/promocoes/loja/ponto-frio/',
+    'https://www.promobit.com.br/promocoes/perfumes-e-beleza/',
+    'https://www.promobit.com.br/promocoes/cama-mesa-e-banho/',
+    'https://www.promobit.com.br/promocoes/saude-e-higiene/',
+    'https://www.promobit.com.br/promocoes/supermercado-e-delivery/',
+    'https://www.promobit.com.br/promocoes/eletrodomesticos/'
 ]
 
 
@@ -59,7 +67,7 @@ async def extract_deals():
                         price_element = deal.find_previous('span', class_='font-sans text-base font-bold lg:text-xl whitespace-nowrap text-primary-500 dark:text-primary-100')
                         price = price_element.text.strip() if price_element else 'Preço não encontrado'
                         previous_price_element = price_element.find_previous('span', class_='font-sans text-sm whitespace-nowrap text-neutral-low-100 dark:text-neutral-high-100 line-through')
-                        previous_price = previous_price_element.text.strip() if previous_price_element else 'Valor anterior não encontrado'
+                        previous_price = previous_price_element.text.strip() if previous_price_element else '?'
                         url_element = deal.find_previous('a', href=True)
                         product_url = f'https://www.promobit.com.br{url_element["href"]}' if url_element else 'URL não encontrada'
 
