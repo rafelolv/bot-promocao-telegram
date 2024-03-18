@@ -6,10 +6,11 @@ import re
 from emojis import keyword_to_emoji, default_emoji
 import os
 from datetime import datetime
+from redirect_promobit import findLink
 
-# Configurações do bot e chat do Telegram
-bot_token = 'INSIRA O TOKEN DO SEU BOT (Criar o Bot pelo BotFather)'
-chat_id = 'INSIRA O CHAT ID (Basta adicionar o bot RawDataBot ao seu chat/grupo e ele te retornara o ID do chat)'
+# Configurações do bot do Telegram
+bot_token = '7032724196:AAGbIy3kafhyn4mljQZB9qcFNeb_JwhXOv0'
+chat_id = '-1002106191183'
 
 bot = telegram.Bot(token=bot_token)
 
@@ -187,13 +188,15 @@ async def send_message(title, price, previous_price, url, image_url, coupon=None
             product_id = url.split('-')[-1]
             product_id = product_id[:-1] if product_id.endswith('/') else product_id
             # Cria o novo URL com o formato desejado
-            redirect_url = f'https://www.promobit.com.br/Redirect/to/{product_id}/'
+            link_direto = findLink(product_id)
+            await asyncio.sleep(5)
+
 
             # Monta a mensagem com base nos dados
             message = f'<b>{title}</b>\n\n'
             if coupon:
                 message += f'🎟️ <b>CUPOM:</b> {coupon}\n'
-            message += f'💵 De: {previous_price} por {price}\n\n🛒 Ver Produto: {redirect_url}'
+            message += f'💵 De: {previous_price} por {price}\n\n🛒 Ver Produto: {link_direto}'
 
             # Verifica se a imagem está disponível
             if image_url:

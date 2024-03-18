@@ -1,6 +1,6 @@
 # emojis.py
 
-# Mapeamento de palavras-chave para emojis
+# Mapeamento de palavras-chave para emojis (Isso aqui eu fiz no modo caralho kkkkkkkkkk)
 keyword_to_emoji = {
     'celular': '📱',
     'tablet': '📱',
@@ -217,8 +217,8 @@ keyword_to_emoji = {
     'ferro de passar': '🧺',
     'aspirador de pó': '🧹',
     'máquina de costura': '🧵',
-    # Adicione mais palavras-chave e emojis conforme necessário
+    # Adicione mais se precisar
 }
 
-# Emoji padrão
+# Emoji padrão caso não encontre algo relacionado
 default_emoji = '⭐'
