@@ -1,6 +1,6 @@
 # Bot de promoções para Telegram
 
-Este é um bot do Telegram que envia promoções encontradas no site Promobit para um chat/grupo específico. Ele faz uso de web scraping para extrair informações sobre as promoções e as envia para o chat configurado.
+Este é um bot do Telegram que envia promoções para um chat/grupo específico. Ele faz uso de web scraping para extrair informações sobre as promoções e as envia para o chat configurado.
 
 ## Configuração do Bot do Telegram
 
