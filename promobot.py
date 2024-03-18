@@ -15,6 +15,7 @@ chat_id = 'INSIRA O CHAT ID (Basta adicionar o bot RawDataBot ao seu chat/grupo 
 bot = telegram.Bot(token=bot_token)
 
 # Lista de URLs das páginas com promoções
+# Você pode trackear o que desejar do site promobit, basta pegar o URL e adicionar nesse campo.
 urls = [
     'https://www.promobit.com.br/promocoes/loja/amazon/',
     'https://www.promobit.com.br/promocoes/loja/magazine-luiza/',
@@ -42,9 +43,9 @@ urls = [
     'https://www.promobit.com.br/promocoes/eletrodomesticos/'
 ]
 
-
 # Arquivo para armazenar as URLs das promoções enviadas
 sent_promos_file = 'sent_promos.txt'
+
 
 async def extract_deals():
     try:
@@ -104,7 +105,7 @@ async def extract_deals():
                                 coupon = coupon_match.group(1)
 
                             await send_message(title, price, previous_price, product_url, image_url, coupon)
-                            
+
                             # Aguarda 2 segundos entre cada mensagem enviada
                             await asyncio.sleep(2)
 
@@ -118,6 +119,7 @@ async def extract_deals():
         print("O servidor não respondeu a tempo. Tentando novamente em alguns segundos...")
         await asyncio.sleep(2)
         await extract_deals()
+
 
 def refresh_page(url):
     """
@@ -134,7 +136,7 @@ def has_changes(new_soup, url):
     """
     # Carrega o conteúdo da última verificação, se disponível
     last_content = load_last_content(url)
-    
+
     # Se não houver conteúdo anterior, assume que houve mudança
     if not last_content:
         return True
@@ -154,6 +156,7 @@ def load_last_content(url):
             return BeautifulSoup(file.read(), "html.parser")
     return None
 
+
 def save_current_content(new_soup, url):
     """
     Salva o conteúdo atual da página para uso futuro.
@@ -161,6 +164,7 @@ def save_current_content(new_soup, url):
     file_path = f"{url.replace('/', '_').replace(':', '_')}.html"
     with open(file_path, "w", encoding="utf-8") as file:
         file.write(str(new_soup))
+
 
 async def send_message_with_photo(message, image_url):
     try:
@@ -180,6 +184,7 @@ async def send_message_with_photo(message, image_url):
     except Exception as e:
         print("Erro ao enviar a mensagem com a imagem:", e)
 
+
 async def send_message(title, price, previous_price, url, image_url, coupon=None):
     # Verifica se a URL do produto é válida
     if 'promobit.com.br/oferta/' in url:
@@ -191,12 +196,15 @@ async def send_message(title, price, previous_price, url, image_url, coupon=None
             link_direto = findLink(product_id)
             await asyncio.sleep(5)
 
-
             # Monta a mensagem com base nos dados
             message = f'<b>{title}</b>\n\n'
             if coupon:
                 message += f'🎟️ <b>CUPOM:</b> {coupon}\n'
-            message += f'💵 De: {previous_price} por {price}\n\n🛒 Ver Produto: {link_direto}'
+            
+            if previous_price != '?':
+                message += f'💵 De: {previous_price} por R$ {price}\n\n🛒 Ver Produto: {link_direto}'
+            else:
+                message += f'💵 R$ {price}\n\n🛒 Ver Produto: {link_direto}'
 
             # Verifica se a imagem está disponível
             if image_url:
@@ -210,6 +218,7 @@ async def send_message(title, price, previous_price, url, image_url, coupon=None
     else:
         print("URL do produto inválido:", url)
 
+
 def is_url_sent(url):
     with open('sent_promos.txt', 'r') as file:
         for line in file:
@@ -222,8 +231,10 @@ def mark_url_as_sent(url):
     with open('sent_promos.txt', 'a') as file:
         file.write(url + '\n')
 
+
 async def main():
     await extract_deals()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

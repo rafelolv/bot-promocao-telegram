@@ -115,7 +115,7 @@ def vivo_store (url):
         
         partes = url_completa.split('?')[0]
 
-        link_direto = partes.replace('\/', '/')
+        link_direto = partes.replace('/', '/')
 
         #print(link_direto)
     return (link_direto)
@@ -127,6 +127,3 @@ def shopee_store (url):
     link_direto = response.url.split('?')[0]+'?'
     #print (link_direto)
     return (link_direto)
-
-a = findLink(1655610)
-print (a)
