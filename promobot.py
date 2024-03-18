@@ -8,9 +8,9 @@ import os
 from datetime import datetime
 from redirect_promobit import findLink
 
-# Configurações do bot do Telegram
-bot_token = '7032724196:AAGbIy3kafhyn4mljQZB9qcFNeb_JwhXOv0'
-chat_id = '-1002106191183'
+# Configurações do bot e chat do Telegram
+bot_token = 'INSIRA O TOKEN DO SEU BOT (Criar o Bot pelo BotFather)'
+chat_id = 'INSIRA O CHAT ID (Basta adicionar o bot RawDataBot ao seu chat/grupo e ele te retornara o ID do chat)'
 
 bot = telegram.Bot(token=bot_token)
 
